@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Genre, isValidGenre } from "../../utils/genreValidator";
 import Book from "./book.model";
 
 export const createBook = async (req: Request, res: Response) => {
@@ -18,6 +19,52 @@ export const createBook = async (req: Request, res: Response) => {
       success: false,
       message: "Error occurred",
       error: error,
+    });
+  }
+};
+
+export const getAllBooks = async (req: Request, res: Response) => {
+  try {
+    const {
+      filter: rawGenre,
+      sortBy = "createdAt",
+      sort = "desc",
+      limit,
+    } = req.query;
+
+    if (rawGenre && typeof rawGenre === "string" && !isValidGenre(rawGenre)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid genre provided",
+      });
+    }
+
+    const filter =
+      rawGenre && typeof rawGenre === "string"
+        ? { genre: rawGenre.toUpperCase() as Genre }
+        : {};
+
+    const sortField = typeof sortBy === "string" ? sortBy : "createdAt";
+    const sortOrder = sort === "asc" ? 1 : -1;
+    const resultLimit =
+      typeof limit === "string" && !isNaN(Number(limit))
+        ? parseInt(limit, 10)
+        : 10;
+
+    const books = await Book.find(filter)
+      .sort({ [sortField]: sortOrder })
+      .limit(resultLimit);
+
+    res.status(200).json({
+      success: true,
+      message: "Books data retrieved successfully",
+      data: books,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
     });
   }
 };
