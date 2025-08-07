@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 import { Genre, isValidGenre } from "../../utils/genreValidator";
 import Book from "./book.model";
+import { UpdateBookSchema } from "./book.validation";
 
 export const createBook = async (req: Request, res: Response) => {
   try {
@@ -98,6 +99,56 @@ export const getBookById = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+export const updateBookById = async (req: Request, res: Response) => {
+  try {
+    const { bookId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(bookId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid book ID format",
+      });
+    }
+
+    const parseResult = UpdateBookSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        error: parseResult.error,
+      });
+    }
+
+    const updateData = parseResult.data;
+
+    const updatedBook = await Book.findByIdAndUpdate(bookId, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedBook) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Book updated successfully",
+      data: updatedBook,
+    });
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: "Something went wrong",
       error,

@@ -29,3 +29,5 @@ export const createBookZodSchema = z.object({
     .nonnegative("Copies must be a non-negative number"),
   available: z.boolean().optional(),
 });
+
+export const UpdateBookSchema = createBookZodSchema.partial();
