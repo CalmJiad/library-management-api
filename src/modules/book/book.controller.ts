@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import { Genre, isValidGenre } from "../../utils/genreValidator";
 import Book from "./book.model";
 
@@ -59,6 +60,41 @@ export const getAllBooks = async (req: Request, res: Response) => {
       success: true,
       message: "Books data retrieved successfully",
       data: books,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+export const getBookById = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.bookId;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid book ID format",
+      });
+    }
+
+    const bookData = await Book.findById(id);
+
+    if (!bookData) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Single book data retrieved successfully",
+      data: bookData,
     });
   } catch (error) {
     res.status(500).json({
