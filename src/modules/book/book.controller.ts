@@ -155,3 +155,37 @@ export const updateBookById = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteBookById = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.bookId;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid book ID format",
+      });
+    }
+
+    const bookData = await Book.findByIdAndDelete(id);
+
+    if (!bookData) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Single book deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
