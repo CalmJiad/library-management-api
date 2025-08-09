@@ -47,13 +47,15 @@ bookSchema.statics.borrowCopies = async function (
 
   book.copies = book.copies - quantity;
 
-  if (book.copies === 0) {
-    book.available = false;
-  }
-
   await book.save();
   return book;
 };
+
+bookSchema.post("save", async function (doc) {
+  if (doc.copies === 0 && doc.available) {
+    await doc.updateOne({ available: false });
+  }
+});
 
 const Book = model<IBookDoc, BookModelType>("book", bookSchema);
 export default Book;
