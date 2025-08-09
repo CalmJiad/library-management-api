@@ -58,6 +58,19 @@ src/
 
 ## How to Use
 
+## Clone the repo
+
+```
+git clone https://github.com/your-username/library-management-api.git
+cd library-management-api
+```
+
+## Install dependencies
+
+```
+npm install
+```
+
 1. Clone the repository
 2. Install dependencies
 
@@ -72,16 +85,43 @@ MONGODB_URI=mongodb://localhost:27017/library_management
 2. Start the development server:
 
 ```
+# Development mode
 npm run dev
+
+# Build TypeScript
+npm run build
+
+# Production mode (after build)
+npm start
+
 ```
+
+## API Endpoints
+
+### Books
+
+| Method | Endpoint       | Description                  |
+| ------ | -------------- | ---------------------------- |
+| POST   | /api/books     | Add a new book               |
+| GET    | /api/books     | Get all books (with filters) |
+| GET    | /api/books/:id | Get a single book            |
+| PUT    | /api/books/:id | Update a book                |
+| DELETE | /api/books/:id | Delete a book                |
+
+### Borrow
+
+| Method | Endpoint    | Description                              |
+| ------ | ----------- | ---------------------------------------- |
+| POST   | /api/borrow | Borrow a book (updates availability)     |
+| GET    | /api/borrow | Get borrowed books summary (aggregation) |
 
 ## How to Test
 
 1. Use Postman or Thunder Client to test the API endpoints.
 2. Import the provided Postman collection for easier testing.
 
-## Have questions?
+## Have questions in your mind?
 
-Feel free to reach out!
+Please feel free to reach out!
 
-Happy coding!
+Happy coding! Cheers!
