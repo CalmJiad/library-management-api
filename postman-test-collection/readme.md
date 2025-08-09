@@ -160,6 +160,14 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Borrowed Books Summary",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
