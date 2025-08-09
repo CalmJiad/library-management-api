@@ -1,7 +1,14 @@
-import { model, Schema } from "mongoose";
-import { IBook } from "./book.interface";
+import mongoose, { Model, model, Schema } from "mongoose";
+import { IBookDoc } from "./book.interface";
 
-const bookSchema = new Schema<IBook>(
+// Interface difference IBook vs IBookDoc
+
+// this is the separate model type that includes our static {borrowCopies}
+interface BookModelType extends Model<IBookDoc> {
+  borrowCopies(bookId: string, quantity: number): Promise<IBookDoc | null>;
+}
+
+const bookSchema = new Schema<IBookDoc, BookModelType>(
   {
     title: { type: String, required: true },
     author: { type: String, required: true },
@@ -25,5 +32,28 @@ const bookSchema = new Schema<IBook>(
   { timestamps: true }
 );
 
-const Book = model<IBook>("book", bookSchema);
+bookSchema.statics.borrowCopies = async function (
+  this: Model<IBookDoc>,
+  bookId: string,
+  quantity: number
+): Promise<IBookDoc | null> {
+  if (!mongoose.Types.ObjectId.isValid(bookId)) return null;
+  if (!Number.isInteger(quantity) || quantity <= 0) return null;
+
+  const book = await this.findById(bookId);
+
+  if (!book) return null;
+  if (book.copies < quantity) return null;
+
+  book.copies = book.copies - quantity;
+
+  if (book.copies === 0) {
+    book.available = false;
+  }
+
+  await book.save();
+  return book;
+};
+
+const Book = model<IBookDoc, BookModelType>("book", bookSchema);
 export default Book;
