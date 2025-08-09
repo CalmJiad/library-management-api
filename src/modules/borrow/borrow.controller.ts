@@ -17,7 +17,7 @@ export const borrowBookById = async (req: Request, res: Response) => {
     if (!Number.isInteger(quantity) || quantity <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Quantity must be a positive integer",
+        message: "Quantity must be a positive number",
       });
     }
 
@@ -52,6 +52,58 @@ export const borrowBookById = async (req: Request, res: Response) => {
       success: false,
       message: "Error occurred",
       error: error,
+    });
+  }
+};
+
+export const getBorrowedBookSummary = async (req: Request, res: Response) => {
+  try {
+    const borrowData = await BorrowBook.aggregate([
+      {
+        $group: {
+          _id: "$book",
+          totalQuantity: { $sum: "$quantity" },
+        },
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "_id",
+          foreignField: "_id",
+          as: "book",
+        },
+      },
+      { $unwind: "$book" },
+      {
+        $project: {
+          _id: 0,
+          book: {
+            title: "$book.title",
+            isbn: "$book.isbn",
+          },
+          totalQuantity: 1,
+        },
+      },
+    ]);
+
+    if (!borrowData) {
+      return res.status(404).json({
+        success: false,
+        message: "No borrowed book data found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Borrowed book data retrieved successfully",
+      data: borrowData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
     });
   }
 };
