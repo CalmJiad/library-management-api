@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import mongoose from "mongoose";
-import Book from "../book/book.model";
-import BorrowBook from "./borrow.model";
+import { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import Book from '../book/book.model';
+import BorrowBook from './borrow.model';
 
 export const borrowBookById = async (req: Request, res: Response) => {
   try {
@@ -10,14 +10,14 @@ export const borrowBookById = async (req: Request, res: Response) => {
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid book ID format",
+        message: 'Invalid book ID format',
       });
     }
 
     if (!Number.isInteger(quantity) || quantity <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Quantity must be a positive number",
+        message: 'Quantity must be a positive number',
       });
     }
 
@@ -26,7 +26,7 @@ export const borrowBookById = async (req: Request, res: Response) => {
     if (isNaN(givenDate.getTime())) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid date format" });
+        .json({ success: false, message: 'Invalid date format' });
     }
 
     const updatedBook = await Book.borrowCopies(bookId, quantity);
@@ -34,7 +34,7 @@ export const borrowBookById = async (req: Request, res: Response) => {
     if (!updatedBook) {
       return res.status(400).json({
         success: false,
-        message: "Book not found or not enough available copies",
+        message: 'Book not found or not enough available copies',
       });
     }
 
@@ -43,14 +43,14 @@ export const borrowBookById = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "Book has been borrowed successfully",
+      message: 'Book has been borrowed successfully',
       data: savedBorrowedBook,
     });
-  } catch (error: any) {
-    console.error("Failed to create borrowed book data:", error);
+  } catch (error: unknown) {
+    console.error('Failed to create borrowed book data:', error);
     res.status(500).json({
       success: false,
-      message: "Error occurred",
+      message: 'Error occurred',
       error: error,
     });
   }
@@ -61,25 +61,25 @@ export const getBorrowedBookSummary = async (req: Request, res: Response) => {
     const borrowData = await BorrowBook.aggregate([
       {
         $group: {
-          _id: "$book",
-          totalQuantity: { $sum: "$quantity" },
+          _id: '$book',
+          totalQuantity: { $sum: '$quantity' },
         },
       },
       {
         $lookup: {
-          from: "books",
-          localField: "_id",
-          foreignField: "_id",
-          as: "book",
+          from: 'books',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'book',
         },
       },
-      { $unwind: "$book" },
+      { $unwind: '$book' },
       {
         $project: {
           _id: 0,
           book: {
-            title: "$book.title",
-            isbn: "$book.isbn",
+            title: '$book.title',
+            isbn: '$book.isbn',
           },
           totalQuantity: 1,
         },
@@ -89,20 +89,20 @@ export const getBorrowedBookSummary = async (req: Request, res: Response) => {
     if (!borrowData) {
       return res.status(404).json({
         success: false,
-        message: "No borrowed book data found",
+        message: 'No borrowed book data found',
         data: null,
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Borrowed book data retrieved successfully",
+      message: 'Borrowed book data retrieved successfully',
       data: borrowData,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: 'Something went wrong',
       error,
     });
   }

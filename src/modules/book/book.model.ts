@@ -1,5 +1,5 @@
-import mongoose, { Model, model, Schema } from "mongoose";
-import { IBookDoc } from "./book.interface";
+import mongoose, { Model, model, Schema } from 'mongoose';
+import { IBookDoc } from './book.interface';
 
 // Interface difference IBook vs IBookDoc
 
@@ -16,12 +16,12 @@ const bookSchema = new Schema<IBookDoc, BookModelType>(
       type: String,
       required: true,
       enum: [
-        "FICTION",
-        "NON_FICTION",
-        "SCIENCE",
-        "HISTORY",
-        "BIOGRAPHY",
-        "FANTASY",
+        'FICTION',
+        'NON_FICTION',
+        'SCIENCE',
+        'HISTORY',
+        'BIOGRAPHY',
+        'FANTASY',
       ],
     },
     isbn: { type: String, required: true, unique: true },
@@ -29,13 +29,13 @@ const bookSchema = new Schema<IBookDoc, BookModelType>(
     copies: { type: Number, required: true, min: 0 },
     available: { type: Boolean, required: true, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 bookSchema.statics.borrowCopies = async function (
   this: Model<IBookDoc>,
   bookId: string,
-  quantity: number
+  quantity: number,
 ): Promise<IBookDoc | null> {
   if (!mongoose.Types.ObjectId.isValid(bookId)) return null;
   if (!Number.isInteger(quantity) || quantity <= 0) return null;
@@ -51,11 +51,11 @@ bookSchema.statics.borrowCopies = async function (
   return book;
 };
 
-bookSchema.post("save", async function (doc) {
+bookSchema.post('save', async function (doc) {
   if (doc.copies === 0 && doc.available) {
     await doc.updateOne({ available: false });
   }
 });
 
-const Book = model<IBookDoc, BookModelType>("book", bookSchema);
+const Book = model<IBookDoc, BookModelType>('book', bookSchema);
 export default Book;

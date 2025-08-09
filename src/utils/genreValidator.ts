@@ -1,10 +1,10 @@
 const genres = [
-  "FICTION",
-  "NON_FICTION",
-  "SCIENCE",
-  "HISTORY",
-  "BIOGRAPHY",
-  "FANTASY",
+  'FICTION',
+  'NON_FICTION',
+  'SCIENCE',
+  'HISTORY',
+  'BIOGRAPHY',
+  'FANTASY',
 ] as const;
 
 export type Genre = (typeof genres)[number];

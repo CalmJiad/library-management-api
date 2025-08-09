@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import { ZodError, ZodType } from "zod";
+import { NextFunction, Request, Response } from 'express';
+import { ZodError, ZodType } from 'zod';
 
-const validateRequest = (schema: ZodType<any>) => {
+const validateRequest = (schema: ZodType<unknown>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse(req.body);
@@ -12,13 +12,13 @@ const validateRequest = (schema: ZodType<any>) => {
         // const messages = error.issues.map((issue) => issue.message);
         return res.status(400).json({
           success: false,
-          message: "Validation failed",
+          message: 'Validation failed',
           error: error.issues,
         });
       }
       return res.status(500).json({
         success: false,
-        message: "Something went wrong during validation",
+        message: 'Something went wrong during validation',
         error,
       });
     }

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import mongoose from "mongoose";
-import { Genre, isValidGenre } from "../../utils/genreValidator";
-import Book from "./book.model";
-import { UpdateBookSchema } from "./book.validation";
+import { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import { Genre, isValidGenre } from '../../utils/genreValidator';
+import Book from './book.model';
+import { UpdateBookSchema } from './book.validation';
 
 export const createBook = async (req: Request, res: Response) => {
   try {
@@ -12,14 +12,14 @@ export const createBook = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "Book created successfully",
+      message: 'Book created successfully',
       data: savedBook,
     });
-  } catch (error: any) {
-    console.error("Failed to create book:", error);
+  } catch (error: unknown) {
+    console.error('Failed to create book:', error);
     res.status(500).json({
       success: false,
-      message: "Error occurred",
+      message: 'Error occurred',
       error: error,
     });
   }
@@ -29,27 +29,27 @@ export const getAllBooks = async (req: Request, res: Response) => {
   try {
     const {
       filter: rawGenre,
-      sortBy = "createdAt",
-      sort = "desc",
+      sortBy = 'createdAt',
+      sort = 'desc',
       limit,
     } = req.query;
 
-    if (rawGenre && typeof rawGenre === "string" && !isValidGenre(rawGenre)) {
+    if (rawGenre && typeof rawGenre === 'string' && !isValidGenre(rawGenre)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid genre provided",
+        message: 'Invalid genre provided',
       });
     }
 
     const filter =
-      rawGenre && typeof rawGenre === "string"
+      rawGenre && typeof rawGenre === 'string'
         ? { genre: rawGenre.toUpperCase() as Genre }
         : {};
 
-    const sortField = typeof sortBy === "string" ? sortBy : "createdAt";
-    const sortOrder = sort === "asc" ? 1 : -1;
+    const sortField = typeof sortBy === 'string' ? sortBy : 'createdAt';
+    const sortOrder = sort === 'asc' ? 1 : -1;
     const resultLimit =
-      typeof limit === "string" && !isNaN(Number(limit))
+      typeof limit === 'string' && !isNaN(Number(limit))
         ? parseInt(limit, 10)
         : 10;
 
@@ -59,13 +59,13 @@ export const getAllBooks = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Books data retrieved successfully",
+      message: 'Books data retrieved successfully',
       data: books,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: 'Something went wrong',
       error,
     });
   }
@@ -78,7 +78,7 @@ export const getBookById = async (req: Request, res: Response) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid book ID format",
+        message: 'Invalid book ID format',
       });
     }
 
@@ -87,20 +87,20 @@ export const getBookById = async (req: Request, res: Response) => {
     if (!bookData) {
       return res.status(404).json({
         success: false,
-        message: "Book not found",
+        message: 'Book not found',
         data: null,
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Single book data retrieved successfully",
+      message: 'Single book data retrieved successfully',
       data: bookData,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: 'Something went wrong',
       error,
     });
   }
@@ -113,7 +113,7 @@ export const updateBookById = async (req: Request, res: Response) => {
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid book ID format",
+        message: 'Invalid book ID format',
       });
     }
 
@@ -122,7 +122,7 @@ export const updateBookById = async (req: Request, res: Response) => {
     if (!parseResult.success) {
       return res.status(400).json({
         success: false,
-        message: "Validation failed",
+        message: 'Validation failed',
         error: parseResult.error,
       });
     }
@@ -137,20 +137,20 @@ export const updateBookById = async (req: Request, res: Response) => {
     if (!updatedBook) {
       return res.status(404).json({
         success: false,
-        message: "Book not found",
+        message: 'Book not found',
         data: null,
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "Book updated successfully",
+      message: 'Book updated successfully',
       data: updatedBook,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: 'Something went wrong',
       error,
     });
   }
@@ -163,7 +163,7 @@ export const deleteBookById = async (req: Request, res: Response) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid book ID format",
+        message: 'Invalid book ID format',
       });
     }
 
@@ -172,19 +172,19 @@ export const deleteBookById = async (req: Request, res: Response) => {
     if (!bookData) {
       return res.status(404).json({
         success: false,
-        message: "Book not found",
+        message: 'Book not found',
         data: null,
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Single book deleted successfully",
+      message: 'Single book deleted successfully',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: 'Something went wrong',
       error,
     });
   }

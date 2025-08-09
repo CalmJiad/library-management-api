@@ -1,10 +1,12 @@
+import { Document } from 'mongoose';
+
 export type Genre =
-  | "FICTION"
-  | "NON_FICTION"
-  | "SCIENCE"
-  | "HISTORY"
-  | "BIOGRAPHY"
-  | "FANTASY";
+  | 'FICTION'
+  | 'NON_FICTION'
+  | 'SCIENCE'
+  | 'HISTORY'
+  | 'BIOGRAPHY'
+  | 'FANTASY';
 
 export interface IBook {
   title: string;
@@ -17,8 +19,8 @@ export interface IBook {
 }
 
 export enum BorrowType {
-  GIVE = "give",
-  TAKE = "take",
+  GIVE = 'give',
+  TAKE = 'take',
 }
 
 export interface IBookDoc extends IBook, Document {
